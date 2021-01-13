@@ -1,21 +1,9 @@
 #include <FastLED.h>
 
-/* Extra IO Pins
-4: EXT IO: G21 / I2C SDA
-5: EXT IO: G22 / I2C SCL
-6: EXT IO: G25 / DAC1
-7: EXT IO: G33 / ADC5 / TOUCH8
-8: EXT IO: G18 / SPI SCK
-9: EXT IO: G19 / SPI MISO
-10: EXT IO: G23 / SPI MOSI
- */
 #define NUM_EXT_IOS 7
 
 #define PIN_LEDS 27
 #define NUM_LEDS 30
-
-#define BRIGHTNESS 128   /* Control the brightness of your leds */
-#define SATURATION 255   /* Control the saturation of your leds */
 
 CRGB leds[NUM_LEDS];
 int ledIndex = 0;
@@ -23,7 +11,15 @@ int ledColorIndex = 0;
 
 int extIoIndex = 0;
 
-
+/* Extra IO Pins
+0: EXT IO: G18 / SPI SCK
+1: EXT IO: G19 / SPI MISO
+2: EXT IO: G21 / I2C SDA
+3: EXT IO: G22 / I2C SCL
+4: EXT IO: G23 / SPI MOSI
+5: EXT IO: G25 / DAC1
+6: EXT IO: G33 / ADC5 / TOUCH8
+ */
 int extIoPins[] = {18, 19, 21, 22, 23, 25, 33};
 
 void setup() { 
