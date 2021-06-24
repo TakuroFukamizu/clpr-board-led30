@@ -61,7 +61,7 @@ void setup() {
         NULL,
         1,
         NULL,
-        PRO_CPU
+        0
     );
 }
 
@@ -74,6 +74,10 @@ void loop() {
         Serial.println("connected");
     }
     delay(1000);
+    isPlaying = true;
+    latestNoteOnTimestamp = 10;
+    brightness = 128;
+    delay(10000);
 }
 
 //-------------------------------
@@ -104,7 +108,7 @@ void onControlChange(uint8_t channel, uint8_t controller, uint8_t value, uint16_
     Serial.printf("Received control change : channel %d, controller %d, value %d (timestamp %dms)\n", channel, controller, value, timestamp);
     switch (controller) {
         case MIDI_CC_DURATION:
-            duration = ((utin8_t)value * 100 / MIDI_VALUE_MAX) + 10;
+            duration = ((uint8_t)value * 100 / MIDI_VALUE_MAX) + 10;
             break;
         case MIDI_CC_COLOR_HUE:
             hue = (uint8_t)value * MAX_HUE / MIDI_VALUE_MAX;
