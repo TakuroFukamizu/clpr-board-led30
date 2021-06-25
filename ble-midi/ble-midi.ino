@@ -54,6 +54,10 @@ void setup() {
     BLEMidiServer.setControlChangeCallback(onControlChange);
     //BLEMidiServer.enableDebugging();
     
+    FastLED.addLeds<NEOPIXEL, PIN_LEDS>(leds, NUM_LEDS);
+    FastLED.clear();  // clear all pixel data
+    FastLED.show();
+    
     xTaskCreatePinnedToCore(
         performanceTask,
         "performanceTask",
@@ -61,7 +65,7 @@ void setup() {
         NULL,
         1,
         NULL,
-        PRO_CPU
+        0
     );
 }
 
@@ -73,7 +77,7 @@ void loop() {
         // delay(1000);
         Serial.println("connected");
     }
-    delay(1000);
+    delay(100);
 }
 
 //-------------------------------
@@ -85,7 +89,7 @@ void connected()
 
 void onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity, uint16_t timestamp) {
     Serial.printf("Received note on : channel %d, note %d, velocity %d (timestamp %dms)\n", channel, note, velocity, timestamp);
-    brightness = (uint8_t)velocity * MAX_BRIGHTNESS / MIDI_VALUE_MAX;
+    brightness = (uint8_t)((float)velocity * (float)MAX_BRIGHTNESS / (float)MIDI_VALUE_MAX);
     latestNoteOnTimestamp = timestamp;
     isPlaying = true;
 }
@@ -93,10 +97,10 @@ void onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity, uint16_t timestam
 void onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity, uint16_t timestamp)
 {
     Serial.printf("Received note off : channel %d, note %d, velocity %d (timestamp %dms)\n", channel, note, velocity, timestamp);
-    if (isPlaying) {
-        isPlaying = false;
-        playIndex = 0;
-    }
+//    if (isPlaying) {
+//        isPlaying = false;
+//        playIndex = 0;
+//    }
 }
 
 void onControlChange(uint8_t channel, uint8_t controller, uint8_t value, uint16_t timestamp)
@@ -104,10 +108,10 @@ void onControlChange(uint8_t channel, uint8_t controller, uint8_t value, uint16_
     Serial.printf("Received control change : channel %d, controller %d, value %d (timestamp %dms)\n", channel, controller, value, timestamp);
     switch (controller) {
         case MIDI_CC_DURATION:
-            duration = ((utin8_t)value * 100 / MIDI_VALUE_MAX) + 10;
+            duration = ((uint8_t)value * 100.f / (float)MIDI_VALUE_MAX) + 10;
             break;
         case MIDI_CC_COLOR_HUE:
-            hue = (uint8_t)value * MAX_HUE / MIDI_VALUE_MAX;
+            hue = (uint8_t)value * (float)MAX_HUE / (float)MIDI_VALUE_MAX;
             break;
     }
 }
@@ -119,19 +123,26 @@ void performanceTask(void *pvParameters) {
                 playIndex = 0;
                 currentNoteOnTimestamp = latestNoteOnTimestamp;
             }
+            // playIndexに応じて光をフェードアウトする
+            uint8_t v = (int)((float)brightness * (1.f - (float)( (float)playIndex / (float)MAX_PERFORMANCE_STEP)));
+            Serial.print(v);
+            Serial.print(", ");
+            Serial.println(playIndex);
             for (int i = 0; i < NUM_LEDS; i++)
             {
-                // TODO: playIndexに応じた処理
-                leds[i] = CHSV(hue, brightness, SATURATION);
+                leds[i] = CHSV(hue, SATURATION, v);
             }
-            FastLED.show();
 
             playIndex++;
             if (MAX_PERFORMANCE_STEP <= playIndex) { // 最後のstep = 演出終了
                 isPlaying = false; 
+                FastLED.clear();
             }
+            FastLED.show();
             vTaskDelay(duration);
         } else {
+            FastLED.clear();
+            FastLED.show();
             vTaskDelay(10);
         }
     }
