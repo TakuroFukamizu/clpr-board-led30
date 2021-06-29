@@ -7,7 +7,9 @@
 /**
  * 必要なArduinoライブラリ
  * ESP32-BLE_MIDI
- * https://github.com/max22-/ESP32-BLE-MIDI
+ *   https://github.com/max22-/ESP32-BLE-MIDI
+ * FastLED
+ *   https://github.com/FastLED/FastLED
  * */
 
 #define PIN_LEDS 27
@@ -44,6 +46,7 @@ void performanceTask(void *pvParameters);
 
 void setup() {
     Serial.begin(115200);
+    // BLE MIDIの初期化・起動
     BLEMidiServer.begin("CLPR-LED32-BLEMIDI");
     BLEMidiServer.setOnConnectCallback(connected);
     BLEMidiServer.setOnDisconnectCallback([](){     // To show how to make a callback with a lambda function
@@ -54,10 +57,12 @@ void setup() {
     BLEMidiServer.setControlChangeCallback(onControlChange);
     //BLEMidiServer.enableDebugging();
     
+    // LED初期化
     FastLED.addLeds<NEOPIXEL, PIN_LEDS>(leds, NUM_LEDS);
     FastLED.clear();  // clear all pixel data
     FastLED.show();
     
+    // 演出(LED制御)用のタスクを起動
     xTaskCreatePinnedToCore(
         performanceTask,
         "performanceTask",
@@ -71,10 +76,6 @@ void setup() {
 
 void loop() {
     if (BLEMidiServer.isConnected()) {
-        // BLEMidiServer.noteOn(0, 69, 127);
-        // delay(1000);
-        // BLEMidiServer.noteOff(0, 69, 127);
-        // delay(1000);
         Serial.println("connected");
     }
     delay(100);
@@ -91,12 +92,13 @@ void onNoteOn(uint8_t channel, uint8_t note, uint8_t velocity, uint16_t timestam
     Serial.printf("Received note on : channel %d, note %d, velocity %d (timestamp %dms)\n", channel, note, velocity, timestamp);
     brightness = (uint8_t)((float)velocity * (float)MAX_BRIGHTNESS / (float)MIDI_VALUE_MAX);
     latestNoteOnTimestamp = timestamp;
-    isPlaying = true;
+    isPlaying = true; // 演出の再生開始をセット
 }
 
 void onNoteOff(uint8_t channel, uint8_t note, uint8_t velocity, uint16_t timestamp)
 {
     Serial.printf("Received note off : channel %d, note %d, velocity %d (timestamp %dms)\n", channel, note, velocity, timestamp);
+    // note offで演出を停止する処理。制御出来に微妙なのでコメントアウト
 //    if (isPlaying) {
 //        isPlaying = false;
 //        playIndex = 0;
@@ -107,15 +109,16 @@ void onControlChange(uint8_t channel, uint8_t controller, uint8_t value, uint16_
 {
     Serial.printf("Received control change : channel %d, controller %d, value %d (timestamp %dms)\n", channel, controller, value, timestamp);
     switch (controller) {
-        case MIDI_CC_DURATION:
+        case MIDI_CC_DURATION: // 1演出あたりの長さを設定
             duration = ((uint8_t)value * 100.f / (float)MIDI_VALUE_MAX) + 10;
             break;
-        case MIDI_CC_COLOR_HUE:
+        case MIDI_CC_COLOR_HUE: // LEDの色を設定
             hue = (uint8_t)value * (float)MAX_HUE / (float)MIDI_VALUE_MAX;
             break;
     }
 }
 
+/** 演出処理のタスク */
 void performanceTask(void *pvParameters) {
     while(1){
         if (isPlaying) {
