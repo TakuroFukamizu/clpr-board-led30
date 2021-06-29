@@ -1,3 +1,9 @@
+# BLE MIDI Sample
+
+## Overview
+BLE MIDI対応でLEDの光るタイミング、明るさ、色、演出の長さを制御できるサンプルです。  
+NT金沢2021出展作品
+
 
 ## MIDI Spec
 
