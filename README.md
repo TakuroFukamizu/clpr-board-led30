@@ -18,6 +18,7 @@
 
 - [rainbow-paripi](./rainbow-paripi) : 自動的にランダムで30個のLED全ての色が変わります。basicよりも派手でパリピです。販売時に書き込まれているプログラムです。
 - [rainbow-basic](./rainbow-basic) : 自動的にランダムに色が変わります。一番簡単なサンプルです。
+- [ble-midi](./ble-midi) : BLE MIDI で演出を制御できるサンプルです。(NT金沢2021出展用)
 - [test](./test) : 出荷前の動作試験用のプログラムです。全てのLEDとIOの動作確認をします。
 
 
