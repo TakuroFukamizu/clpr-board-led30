@@ -18,7 +18,7 @@
 #define NUM_LEDS 30
 #define MAX_BRIGHTNESS 255   /* Control the brightness of your leds */
 #define DEF_SATURATION 64   /* Control the saturation of your leds */
-#define MAX_HUE 360
+#define MAX_HUE 255
 #define MAX_SATURATION 255
 #define MAX_PERFORMANCE_STEP 10
 
