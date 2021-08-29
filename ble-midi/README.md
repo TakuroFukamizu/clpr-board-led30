@@ -14,5 +14,9 @@ NT金沢2021出展作品
 
 ### Control Change
 - channel は無視
-- CC2 = duration変更: 0-127 を 10-1000 にマップする
-- CC3 = hue変更(HSVのH): 0-127 を 0-360 にマップする
+
+| Channels |   Description   |               Value mapping rule               |
+| -------- | --------------- | ---------------------------------------------- |
+| CC2      | duration変更    | 0-127 を 10-1000 にマップする                  |
+| CC3      | hue変更(HSVのH) | 0-127 を 0-255(FastLEDの入力仕様) にマップする |
+| CC4      | 彩度(HSVのS)    | 0-127 を 0-255(FastLEDの入力仕様) にマップする |
