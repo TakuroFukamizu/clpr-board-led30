@@ -13,11 +13,16 @@
 #define PIN_LEDS 27
 #define NUM_LEDS 30
 
-#define BRIGHTNESS 255   /* Control the brightness of your leds */
-#define SATURATION 128   /* Control the saturation of your leds */
+#define BRIGHTNESS 128   /* Control the brightness of your leds */
+#define SATURATION 255   /* Control the saturation of your leds */
+#define MAX_HUE 255
+#define MAX_BRIGHTNESS 255
+#define MAX_SATURATION 255
 
 CRGB leds[NUM_LEDS];
 int hue;
+int brightness;
+int saturation;
 
 void setup() { 
     FastLED.addLeds<NEOPIXEL, PIN_LEDS>(leds, NUM_LEDS);
@@ -27,12 +32,16 @@ void setup() {
 void loop() {
     for (int i = 0; i < NUM_LEDS; i = i + 2) {
         // 1st
-        hue = (int)random(0, 128) * 2;
-        leds[i] = CHSV(hue, BRIGHTNESS, SATURATION);
+        hue = random(MAX_HUE+1);
+        brightness = random(MAX_BRIGHTNESS+1);
+        saturation = random(MAX_SATURATION+1);
+        leds[i] = CHSV(hue, saturation, brightness);
 
         // 2nd
-        hue = (int)random(0, 16) * 16;
-        leds[i + 1] = CHSV(hue, BRIGHTNESS, SATURATION);
+        hue = MAX_HUE - hue;
+        brightness = MAX_BRIGHTNESS - brightness;
+        saturation = MAX_SATURATION - saturation;
+        leds[i + 1] = CHSV(hue, saturation, brightness);
     }
     FastLED.show();
     delay(100);
