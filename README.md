@@ -20,6 +20,7 @@
 - [rainbow-basic](./rainbow-basic) : 自動的にランダムに色が変わります。一番簡単なサンプルです。
 - [gaming](./gaming) : ゲーミングな光り方をするサンプルです。
 - [ble-midi](./ble-midi) : BLE MIDI で演出を制御できるサンプルです。(NT金沢2021出展用)
+- [mft-paripi-gaming](./mft-paripi-gaming) : rainbow-paripi と gaming の発行パターンを10秒ごとに交互に切り替えます。Maker Faire Tokyo 2023 販売用のプログラムです。
 - [test](./test) : 出荷前の動作試験用のプログラムです。全てのLEDとIOの動作確認をします。
 
 
